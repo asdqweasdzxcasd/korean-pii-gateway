@@ -28,3 +28,17 @@ def test_ignores_passport_pattern_without_context():
 def test_detects_driver_license_without_context():
     [d] = detect("11-22-123456-78")
     assert d.type == "driver_license"
+
+
+def test_phone_not_misclassified_as_account_near_bank_keyword():
+    # 은행 키워드 근처의 전화번호는 phone이어야 하고 account로 오분류되면 안 됨
+    detections = detect("국민은행 고객센터 010-1234-5678로 문의주세요")
+    types = [d.type for d in detections]
+    assert types == ["phone"]
+
+
+def test_driver_license_not_misclassified_as_account_near_bank_keyword():
+    # 은행 키워드 근처의 운전면허는 driver_license이어야 하고 account로 오분류되면 안 됨
+    detections = detect("국민은행 11-22-123456-78 문의")
+    types = [d.type for d in detections]
+    assert types == ["driver_license"]

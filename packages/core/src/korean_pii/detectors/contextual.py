@@ -2,6 +2,7 @@
 import re
 
 from korean_pii.detectors import DETECTORS
+from korean_pii.detectors.phone import _LANDLINE, _MOBILE
 from korean_pii.types import Detection
 
 _ACCOUNT = re.compile(r"(?<![\d-])\d{2,6}(?:-\d{2,6}){1,3}(?![\d-])")
@@ -23,9 +24,13 @@ def _has_context(text: str, start: int, keywords: tuple[str, ...]) -> bool:
 def find(text: str) -> list[Detection]:
     found = []
     for m in _ACCOUNT.finditer(text):
-        digits = m.group(0).replace("-", "")
+        matched_str = m.group(0)
+        digits = matched_str.replace("-", "")
+        # 전화·운전면허 형태는 해당 디텍터가 담당하므로, 계좌에서 제외
+        if _MOBILE.fullmatch(matched_str) or _LANDLINE.fullmatch(matched_str) or _DRIVER.fullmatch(matched_str):
+            continue
         if 10 <= len(digits) <= 14 and _has_context(text, m.start(), _BANK_KEYWORDS):
-            found.append(Detection("account", m.start(), m.end(), m.group(0)))
+            found.append(Detection("account", m.start(), m.end(), matched_str))
     for m in _PASSPORT.finditer(text):
         if _has_context(text, m.start(), _PASSPORT_KEYWORDS):
             found.append(Detection("passport", m.start(), m.end(), m.group(0)))
