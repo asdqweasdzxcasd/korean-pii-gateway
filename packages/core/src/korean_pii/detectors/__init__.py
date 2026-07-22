@@ -5,4 +5,4 @@ from korean_pii.types import Detection
 
 DETECTORS: dict[str, Callable[[str], list[Detection]]] = {}
 
-from korean_pii.detectors import rrn  # noqa: E402,F401  디텍터 등록용
+from korean_pii.detectors import phone, rrn  # noqa: E402,F401  디텍터 등록용
