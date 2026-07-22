@@ -16,10 +16,10 @@ def detect(text: str, types: set[str] | None = None) -> list[Detection]:
     if not text:
         return []
     found: list[Detection] = []
-    for name, detector in DETECTORS.items():
-        if types is not None and name not in types:
-            continue
+    for detector in DETECTORS.values():
         found.extend(detector(text))
+    if types is not None:
+        found = [d for d in found if d.type in types]
     return _resolve_overlaps(found)
 
 
