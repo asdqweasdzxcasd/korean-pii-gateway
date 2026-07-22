@@ -1,0 +1,10 @@
+services:
+  korean-pii-gateway:
+    build: .
+    ports:
+      - "8500:8500"
+    environment:
+      KPG_UPSTREAM_BASE_URL: https://api.openai.com   # Claude는 Anthropic OpenAI 호환 엔드포인트로 교체
+      KPG_ACTION: mask        # mask | block
+      KPG_FAIL_MODE: closed   # closed | open
+      KPG_MASK_MODE: format   # format | placeholder
