@@ -1,4 +1,4 @@
-from korean_pii import Detection, MaskPolicy, detect, mask
+from korean_pii import MaskPolicy, detect, mask
 
 
 def test_detect_empty_text_returns_empty_list():

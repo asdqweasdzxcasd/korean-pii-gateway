@@ -4,3 +4,5 @@ __pycache__/
 .pytest_cache/
 dist/
 .venv/
+.claude/autodev.state
+.claude/settings.local.json

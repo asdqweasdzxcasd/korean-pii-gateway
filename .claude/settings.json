@@ -1,0 +1,41 @@
+{
+  "permissions": {
+    "defaultMode": "auto",
+    "allow": [
+      "Bash(./scripts/verify)",
+      "Bash(scripts/verify)",
+      "Bash(.venv/bin/python *)",
+      "Bash(.venv/bin/pytest *)",
+      "Bash(.venv/bin/ruff *)",
+      "Bash(uv pip install *)",
+      "Bash(uv venv*)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(docker compose config*)"
+    ],
+    "ask": [
+      "Bash(git push*)",
+      "Bash(uv publish*)",
+      "Bash(twine *)",
+      "Bash(docker push*)",
+      "Bash(gh release *)"
+    ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "scripts/autodev-stop-hook.sh",
+            "timeout": 120,
+            "statusMessage": "autodev: verify 확인 중..."
+          }
+        ]
+      }
+    ]
+  }
+}
