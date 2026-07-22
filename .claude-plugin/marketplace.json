@@ -1,0 +1,12 @@
+{
+  "name": "korean-pii-gateway",
+  "owner": { "name": "asdqweasdzxcasd" },
+  "description": "한국어 개인정보(PII) 탐지·마스킹 게이트웨이의 공식 클라이언트 어댑터 모음",
+  "plugins": [
+    {
+      "name": "korean-pii-guard",
+      "source": "./adapters/claude-code",
+      "description": "한국어 개인정보를 Claude에 보내기 전에 탐지·차단하는 훅"
+    }
+  ]
+}

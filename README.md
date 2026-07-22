@@ -129,7 +129,35 @@ pytest packages/core/tests/test_corpus.py
 
 ## 어댑터
 
-Open WebUI, Claude Code 등과의 어댑터는 곧 추가될 예정입니다.
+게이트웨이 없이 클라이언트 쪽에서 바로 붙일 수 있는 어댑터 2종을 제공합니다. 둘 다 위의 "보조 방어 계층" 고지가 그대로 적용됩니다 — 정규식 기반 탐지의 한계로 미탐지가 발생할 수 있으므로 유일한 방어선으로 의존하지 마세요.
+
+### Open WebUI
+
+Open WebUI의 Function(Filter) 기능으로 등록해 대화 메시지가 모델로 전송되기 전에 마스킹합니다.
+
+1. `adapters/openwebui/korean_pii_filter.py`의 내용을 복사합니다.
+2. Open WebUI 관리자 화면(`설정 → 관리자 설정 → Functions`)에서 "함수 추가"를 누르고 코드를 붙여넣어 저장합니다. 또는 openwebui.com 커뮤니티 함수 등록 절차를 따라 동일한 코드를 배포해도 됩니다.
+3. 워크스페이스 또는 모델 설정에서 이 Filter를 활성화합니다(`Valves`의 `mask_mode`로 `format`/`placeholder` 방식을 선택할 수 있습니다).
+4. 실행 환경에 `korean-pii` 패키지가 설치되어 있어야 합니다(`pip install korean-pii`). Open WebUI 컨테이너에 직접 설치하거나, 커스텀 이미지를 빌드할 때 포함하세요.
+
+### Claude Code 플러그인
+
+`UserPromptSubmit` 훅으로 등록되어, 사용자가 입력한 프롬프트에 한국어 개인정보가 감지되면 Claude로 전송되기 전에 차단하고 마스킹된 버전을 제안합니다.
+
+사전 조건: 훅을 실행할 환경(로컬 머신)에 `korean-pii` 패키지가 설치되어 있어야 합니다.
+
+```bash
+pip install korean-pii
+```
+
+설치:
+
+```
+/plugin marketplace add asdqweasdzxcasd/korean-pii-gateway
+/plugin install korean-pii-guard@korean-pii-gateway
+```
+
+설치 후 개인정보가 포함된 프롬프트(예: 주민등록번호, 전화번호)를 입력하면 전송이 차단되고, 마스킹된 버전으로 다시 시도하라는 안내 메시지가 표시됩니다. 훅 로직 자체(마스킹 결과·차단 조건)는 `pytest packages/core/tests/test_claude_code_adapter.py`로 검증되어 있으며, `claude plugin validate`로 플러그인·마켓플레이스 매니페스트 형식도 확인되어 있습니다. 다만 `/plugin marketplace add` → `/plugin install` → 실제 세션에서의 차단 동작 확인은 로컬 `claude` 세션에서 사용자가 직접 한 번 실행해 보는 것을 권장합니다.
 
 ## 라이선스
 
