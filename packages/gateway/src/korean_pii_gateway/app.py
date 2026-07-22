@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 
 import httpx
 from fastapi import FastAPI, Request
-from fastapi.responses import StreamingResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from starlette.background import BackgroundTask
 
 from korean_pii_gateway.config import Settings
@@ -35,7 +35,22 @@ def create_app(
 
     @app.post("/v1/chat/completions")
     async def chat_completions(request: Request):
-        body = await request.json()
+        try:
+            body = await request.json()
+        except Exception:
+            body = None
+        if not isinstance(body, dict):
+            return JSONResponse(
+                status_code=400,
+                content={
+                    "error": {
+                        "message": "요청 본문이 유효한 JSON 객체가 아닙니다.",
+                        "type": "invalid_request_error",
+                        "code": "invalid_body",
+                        "param": None,
+                    }
+                },
+            )
         scanned, detections = scan_chat_body(body, settings.mask_mode)
         headers = {
             k: v for k, v in request.headers.items() if k.lower() in _FORWARD_HEADERS

@@ -18,6 +18,7 @@ def upstream_capture():
     async def chat(request: Request):
         captured["body"] = await request.json()
         captured["auth"] = request.headers.get("authorization")
+        captured["headers"] = dict(request.headers)
         return JSONResponse({"id": "chatcmpl-test", "choices": []})
 
     captured["app"] = upstream
