@@ -25,6 +25,14 @@ def test_placeholder_mode():
     assert "990101" not in result.text
 
 
+def test_format_mask_short_email_local_part_fully_masked():
+    # 로컬파트가 2자 이하면 전체를 마스킹해야 함 (최소 1자 이상 노출되면 안 됨)
+    result = mask("메일 ab@example.com")
+    assert "ab@" not in result.text
+    assert "@example.com" in result.text
+    assert len(result.detections) == 1
+
+
 def test_mask_multiple_detections_preserves_surrounding_text():
     result = mask("A 990101-1234567 B 010-1234-5678 C")
     assert result.text.startswith("A ") and result.text.endswith(" C") and " B " in result.text

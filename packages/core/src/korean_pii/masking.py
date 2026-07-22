@@ -23,7 +23,10 @@ def _mask_chars(value: str, keep_head: int = 0, keep_tail: int = 0) -> str:
 
 def _mask_email(value: str) -> str:
     local, _, domain = value.partition("@")
-    return _mask_chars(local, keep_head=2) + "@" + domain
+    # 로컬파트 유효 문자가 2자 이하면 최소 1자 이상 노출되는 것을 막기 위해 전체 마스킹
+    valid_len = sum(1 for ch in local if ch not in _SEPARATORS)
+    keep_head = 2 if valid_len > 2 else 0
+    return _mask_chars(local, keep_head=keep_head) + "@" + domain
 
 
 _RULES = {
