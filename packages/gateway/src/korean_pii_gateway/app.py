@@ -1,4 +1,6 @@
 """FastAPI 앱 팩토리."""
+from contextlib import asynccontextmanager
+
 import httpx
 from fastapi import FastAPI
 
@@ -10,16 +12,18 @@ def create_app(
     transport: httpx.AsyncBaseTransport | None = None,
 ) -> FastAPI:
     settings = settings or Settings.from_env()
-    app = FastAPI(title="korean-pii-gateway")
+
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):
+        app.state.client = httpx.AsyncClient(transport=transport, timeout=120.0)
+        yield
+        await app.state.client.aclose()
+
+    app = FastAPI(title="korean-pii-gateway", lifespan=lifespan)
     app.state.settings = settings
-    app.state.client = httpx.AsyncClient(transport=transport, timeout=120.0)
 
     @app.get("/health")
     async def health():
         return {"status": "ok"}
-
-    @app.on_event("shutdown")
-    async def shutdown():
-        await app.state.client.aclose()
 
     return app

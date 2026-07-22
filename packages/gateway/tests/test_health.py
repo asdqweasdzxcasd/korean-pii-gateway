@@ -6,10 +6,10 @@ from korean_pii_gateway.config import Settings
 
 def test_health_returns_ok():
     app = create_app(Settings(upstream_base_url="http://upstream"))
-    client = TestClient(app)
-    resp = client.get("/health")
-    assert resp.status_code == 200
-    assert resp.json() == {"status": "ok"}
+    with TestClient(app) as client:
+        resp = client.get("/health")
+        assert resp.status_code == 200
+        assert resp.json() == {"status": "ok"}
 
 
 def test_settings_from_env(monkeypatch):
