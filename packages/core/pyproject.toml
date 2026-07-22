@@ -1,0 +1,13 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "korean-pii"
+version = "0.1.0"
+description = "한국어 개인정보(PII) 탐지·마스킹 엔진 (의존성 0)"
+requires-python = ">=3.11"
+license = "MIT"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/korean_pii"]
