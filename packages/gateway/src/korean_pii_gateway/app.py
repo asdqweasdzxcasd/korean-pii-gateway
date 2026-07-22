@@ -90,7 +90,15 @@ def create_app(
             content=_json.dumps(scanned, ensure_ascii=False).encode(),
             headers={**headers, "content-type": "application/json"},
         )
-        upstream_resp = await app.state.client.send(upstream_req, stream=True)
+        try:
+            upstream_resp = await app.state.client.send(upstream_req, stream=True)
+        except httpx.HTTPError:
+            return JSONResponse(
+                status_code=502,
+                content=_error(
+                    "업스트림 서버에 연결할 수 없습니다.", "upstream_unreachable"
+                ),
+            )
         resp_headers = {
             k: v
             for k, v in upstream_resp.headers.items()

@@ -1,3 +1,4 @@
+import pytest
 from fastapi.testclient import TestClient
 
 from korean_pii_gateway.app import create_app
@@ -19,3 +20,9 @@ def test_settings_from_env(monkeypatch):
     assert s.upstream_base_url == "http://example:8000"  # 끝 슬래시 제거
     assert s.action == "block"
     assert s.fail_mode == "closed"  # 기본값
+
+
+def test_settings_rejects_invalid_fail_mode():
+    # fail_mode 오타("close")가 조용히 무시되어 fail-open처럼 동작하면 안 됨 — 기동 시점에 fail-fast
+    with pytest.raises(ValueError):
+        Settings(upstream_base_url="http://u", fail_mode="close")
