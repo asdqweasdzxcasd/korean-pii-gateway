@@ -1,0 +1,44 @@
+from korean_pii import detect
+
+# 테스트용 번호는 공개 알고리즘으로 생성한 가상 번호다 (실존 번호 아님).
+VALID_WITH_HYPHEN = "990101-1234567"       # 하이픈 있음 → 날짜만 유효하면 탐지
+VALID_CHECKSUM = "9901011234563"           # 하이픈 없음, 체크섬 통과 (아래 알고리즘으로 계산)
+INVALID_CHECKSUM_BARE = "9901011234567"    # 하이픈 없음, 체크섬 실패 → 미탐지
+INVALID_DATE = "991301-1234567"            # 13월 → 미탐지
+
+
+def _rrn_checksum(digits12: str) -> str:
+    weights = (2, 3, 4, 5, 6, 7, 8, 9, 2, 3, 4, 5)
+    s = sum(int(d) * w for d, w in zip(digits12, weights))
+    return str((11 - s % 11) % 10)
+
+
+def test_fixture_checksum_is_correct():
+    # 픽스처 자체 검증: VALID_CHECKSUM 마지막 자리가 실제 체크 자리인지
+    assert VALID_CHECKSUM[12] == _rrn_checksum(VALID_CHECKSUM[:12])
+    assert INVALID_CHECKSUM_BARE[12] != _rrn_checksum(INVALID_CHECKSUM_BARE[:12])
+
+
+def test_detects_hyphenated_rrn_without_checksum():
+    [d] = detect(f"제 주민번호는 {VALID_WITH_HYPHEN} 입니다")
+    assert d.type == "rrn"
+    assert d.value == VALID_WITH_HYPHEN
+
+
+def test_detects_bare_rrn_only_with_valid_checksum():
+    [d] = detect(f"번호 {VALID_CHECKSUM} 확인")
+    assert d.type == "rrn"
+
+
+def test_ignores_bare_rrn_with_bad_checksum():
+    assert detect(f"번호 {INVALID_CHECKSUM_BARE} 확인") == []
+
+
+def test_ignores_invalid_date():
+    assert detect(f"번호 {INVALID_DATE} 확인") == []
+
+
+def test_detects_foreign_registration_number():
+    # 성별 자리 5~8 = 외국인등록번호. 하이픈 있으면 날짜 유효성만 요구.
+    [d] = detect("외국인등록번호 990101-5234567")
+    assert d.type == "rrn"
