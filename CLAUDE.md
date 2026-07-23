@@ -29,6 +29,9 @@
 - `git push`, PyPI 발행(`uv publish`/`twine`), `docker push`, `gh release` — 자동 실행 금지 (settings.json의 ask 규칙과 동일)
 - 시크릿·토큰을 코드/설정에 하드코딩하지 않는다
 
-## 남은 릴리스 체크리스트 (MEMO.md 참조)
+## 릴리스 상태
 
-① PyPI 발행(korean-pii, korean-pii-gateway) ② 실 uvicorn SSE 수동 검증 ③ `/plugin install` 실세션 도그푸딩 ④ v0.1 태그
+- **v0.1.0 릴리스 완료 (2026-07-23)**: PyPI 발행(korean-pii, korean-pii-gateway) · 실 uvicorn SSE 검증 · 플러그인 도그푸딩 · v0.1.0 태그
+- PyPI 토큰: `~/dev/token/pypi-korean-pii.txt`, `pypi-korean-pii-gateway.txt` (프로젝트 스코프)
+- 현재 단계: 유통 (docs/tutorial-ko.md 튜토리얼, openwebui.com 함수 등록, 커뮤니티 공유)
+- v0.2 백로그: Anthropic 네이티브(/v1/messages), 타입별 on/off, NER, Trusted Publishing
