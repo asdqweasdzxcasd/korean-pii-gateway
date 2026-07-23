@@ -6,8 +6,22 @@ build-backend = "hatchling.build"
 name = "korean-pii"
 version = "0.1.0"
 description = "한국어 개인정보(PII) 탐지·마스킹 엔진 (의존성 0)"
+readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
+authors = [{ name = "asdqweasdzxcasd" }]
+keywords = ["pii", "korean", "privacy", "masking", "redaction"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Natural Language :: Korean",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Security",
+]
+
+[project.urls]
+Repository = "https://github.com/asdqweasdzxcasd/korean-pii-gateway"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/korean_pii"]
